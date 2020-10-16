@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace FakeXiecheng.API.Models
 {
@@ -25,5 +26,7 @@ namespace FakeXiecheng.API.Models
         public string Fees { get; set; }
 
         public string Notes { get; set; }
+
+        public ICollection<TouristRoutePicture> TouristRoutePictures { get; set; }
     }
 }
