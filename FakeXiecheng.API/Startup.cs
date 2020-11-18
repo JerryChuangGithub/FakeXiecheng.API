@@ -26,7 +26,8 @@ namespace FakeXiecheng.API
             services.AddTransient<ITouristRouteRepository, TouristRouteRepository>();
             services.AddDbContext<AppDbContext>(option =>
             {
-                option.UseSqlServer(Configuration["DbContext:ConnectionString"]);
+                // option.UseSqlServer(Configuration["DbContext:ConnectionString"]);
+                option.UseMySql(Configuration["DbContext:MySQLConnectionString"]);
             });
         }
 
