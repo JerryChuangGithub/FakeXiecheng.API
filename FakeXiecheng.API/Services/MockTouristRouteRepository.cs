@@ -5,7 +5,7 @@ using FakeXiecheng.API.Models;
 
 namespace FakeXiecheng.API.Services
 {
-    public class MockTouristRouteRepository : ITouristRouteRepository
+    public class MockTouristRouteRepository// : ITouristRouteRepository
     {
         private readonly List<TouristRoute> _routes;
 
