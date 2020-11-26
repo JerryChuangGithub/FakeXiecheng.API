@@ -24,9 +24,11 @@ namespace FakeXiecheng.API.Controllers
             _touristRouteRepository = touristRouteRepository;
         }
 
+        // api/TouristRoutes?keyword=argument
+        // if action argument not equal query string, can use [FromQuery(Name = "xxx")]
         [HttpGet]
         [HttpHead]
-        public IActionResult GetTouristRoutes()
+        public IActionResult GetTouristRoutes([FromQuery]string keyword)
         {
             var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutes();
 
