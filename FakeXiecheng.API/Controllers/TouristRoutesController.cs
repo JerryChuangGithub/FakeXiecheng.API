@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using AutoMapper;
 using FakeXiecheng.API.Dtos;
+using FakeXiecheng.API.ResourceParameters;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,14 +30,12 @@ namespace FakeXiecheng.API.Controllers
         // if action argument not equal query string, can use [FromQuery(Name = "xxx")]
         [HttpGet]
         [HttpHead]
-        public IActionResult GetTouristRoutes(
-            [FromQuery]string keyword,
-            string rating)
+        public IActionResult GetTouristRoutes([FromQuery]TouristRouteResourceParameters parameters)
         {
             var regex = new Regex(@"([A-Za-z0-9\-]+)(\d+)");
             var ratingOperator = string.Empty;
             var ratingValue = -1;
-            var match = regex.Match(rating);
+            var match = regex.Match(parameters.Rating);
             if (match.Success)
             {
                 ratingOperator = match.Groups[1].Value;
@@ -44,7 +43,7 @@ namespace FakeXiecheng.API.Controllers
             }
             
             var touristRoutesFromRepo = _touristRouteRepository
-                .GetTouristRoutes(keyword, ratingOperator, ratingValue);
+                .GetTouristRoutes(parameters.Keyword, ratingOperator, ratingValue);
 
             if (touristRoutesFromRepo == null || touristRoutesFromRepo.Any() == false)
             {
