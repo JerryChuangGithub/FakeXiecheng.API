@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace FakeXiecheng.API.Dtos
 {
@@ -31,5 +32,7 @@ namespace FakeXiecheng.API.Dtos
         public string TripType { get; set; }
 
         public string DepartureCity { get; set; }
+        
+        public ICollection<TouristRoutePictureDto> TouristRoutePictures { get; set; }
     }
 }

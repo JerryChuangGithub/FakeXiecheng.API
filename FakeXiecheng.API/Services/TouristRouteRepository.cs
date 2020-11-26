@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FakeXiecheng.API.Database;
 using FakeXiecheng.API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FakeXiecheng.API.Services
 {
@@ -17,12 +18,12 @@ namespace FakeXiecheng.API.Services
 
         public IEnumerable<TouristRoute> GetTouristRoutes()
         {
-            return _context.TouristRoutes;
+            return _context.TouristRoutes.Include(x => x.TouristRoutePictures);
         }
 
         public TouristRoute GetTouristRoute(Guid touristRouteId)
         {
-            return _context.TouristRoutes.FirstOrDefault(x => x.Id == touristRouteId);
+            return _context.TouristRoutes.Include(x => x.TouristRoutePictures).FirstOrDefault(x => x.Id == touristRouteId);
         }
 
         public bool TouristRouteExists(Guid touristRouteId)
