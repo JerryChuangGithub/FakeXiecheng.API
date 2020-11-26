@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using AutoMapper;
 using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Services;
@@ -28,8 +29,20 @@ namespace FakeXiecheng.API.Controllers
         // if action argument not equal query string, can use [FromQuery(Name = "xxx")]
         [HttpGet]
         [HttpHead]
-        public IActionResult GetTouristRoutes([FromQuery]string keyword)
+        public IActionResult GetTouristRoutes(
+            [FromQuery]string keyword,
+            string rating)
         {
+            var regex = new Regex(@"([A-Za-z0-9\-]+)(\d+)");
+            var ratingOperator = string.Empty;
+            var ratingValue = -1;
+            var match = regex.Match(rating);
+            if (match.Success)
+            {
+                ratingOperator = match.Groups[1].Value;
+                ratingValue = int.Parse(match.Groups[2].Value);
+            }
+            
             var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutes(keyword);
 
             if (touristRoutesFromRepo == null || touristRoutesFromRepo.Any() == false)
