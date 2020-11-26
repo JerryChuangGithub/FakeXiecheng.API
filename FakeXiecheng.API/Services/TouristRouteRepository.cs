@@ -16,17 +16,32 @@ namespace FakeXiecheng.API.Services
             _context = context;
         }
 
-        public IEnumerable<TouristRoute> GetTouristRoutes(string keyword)
+        public IEnumerable<TouristRoute> GetTouristRoutes(
+            string keyword,
+            string ratingOperator,
+            int ratingValue)
         {
-            var query = _context
+            IQueryable<TouristRoute> query = _context
                 .TouristRoutes
                 .Include(x => x.TouristRoutePictures);
 
-            if (string.IsNullOrWhiteSpace(keyword))
-                return query;
+            if (string.IsNullOrWhiteSpace(keyword) == false)
+            {
+                keyword = keyword.Trim();
+                query = query.Where(x => x.Title.Contains(keyword));
+            }
 
-            keyword = keyword.Trim();
-            return query.Where(x => x.Title.Contains(keyword));
+            if (ratingValue >= 0)
+            {
+                query = ratingOperator switch
+                {
+                    "largerThan" => query.Where(r => r.Rating >= ratingValue),
+                    "lessThan" => query.Where(r => r.Rating <= ratingValue),
+                    _ => query.Where(r => r.Rating == ratingValue)
+                };
+            }
+
+            return query;
         }
 
         public TouristRoute GetTouristRoute(Guid touristRouteId)

@@ -43,7 +43,8 @@ namespace FakeXiecheng.API.Controllers
                 ratingValue = int.Parse(match.Groups[2].Value);
             }
             
-            var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutes(keyword);
+            var touristRoutesFromRepo = _touristRouteRepository
+                .GetTouristRoutes(keyword, ratingOperator, ratingValue);
 
             if (touristRoutesFromRepo == null || touristRoutesFromRepo.Any() == false)
             {
