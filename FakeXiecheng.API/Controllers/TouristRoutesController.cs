@@ -32,18 +32,8 @@ namespace FakeXiecheng.API.Controllers
         [HttpHead]
         public IActionResult GetTouristRoutes([FromQuery]TouristRouteResourceParameters parameters)
         {
-            var regex = new Regex(@"([A-Za-z0-9\-]+)(\d+)");
-            var ratingOperator = string.Empty;
-            var ratingValue = -1;
-            var match = regex.Match(parameters.Rating);
-            if (match.Success)
-            {
-                ratingOperator = match.Groups[1].Value;
-                ratingValue = int.Parse(match.Groups[2].Value);
-            }
-            
             var touristRoutesFromRepo = _touristRouteRepository
-                .GetTouristRoutes(parameters.Keyword, ratingOperator, ratingValue);
+                .GetTouristRoutes(parameters.Keyword, parameters.RatingOperator, parameters.RatingValue);
 
             if (touristRoutesFromRepo == null || touristRoutesFromRepo.Any() == false)
             {

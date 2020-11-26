@@ -19,7 +19,7 @@ namespace FakeXiecheng.API.Services
         public IEnumerable<TouristRoute> GetTouristRoutes(
             string keyword,
             string ratingOperator,
-            int ratingValue)
+            int? ratingValue)
         {
             IQueryable<TouristRoute> query = _context
                 .TouristRoutes
