@@ -30,7 +30,7 @@ namespace FakeXiecheng.API.Controllers
         [HttpHead]
         public IActionResult GetTouristRoutes([FromQuery]string keyword)
         {
-            var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutes();
+            var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutes(keyword);
 
             if (touristRoutesFromRepo == null || touristRoutesFromRepo.Any() == false)
             {
