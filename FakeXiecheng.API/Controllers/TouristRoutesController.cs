@@ -25,6 +25,7 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpGet]
+        [HttpHead]
         public IActionResult GetTouristRoutes()
         {
             var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutes();
@@ -40,6 +41,7 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpGet("{touristRouteId:Guid}")]
+        [HttpHead("{touristRouteId:Guid}")]
         public IActionResult GetTouristRouteById(Guid touristRouteId)
         {
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRoute(touristRouteId);
