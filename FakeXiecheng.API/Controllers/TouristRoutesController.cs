@@ -45,7 +45,7 @@ namespace FakeXiecheng.API.Controllers
             return Ok(touristRoutesDto);
         }
 
-        [HttpGet("{touristRouteId:Guid}")]
+        [HttpGet("{touristRouteId:Guid}", Name = "GetTouristRouteById")]
         [HttpHead("{touristRouteId:Guid}")]
         public IActionResult GetTouristRouteById(Guid touristRouteId)
         {
@@ -65,8 +65,13 @@ namespace FakeXiecheng.API.Controllers
         public IActionResult CreateTouristRoute([FromBody]TouristRouteForCreationDto touristRouteForCreationDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteForCreationDto);
-
-            return NoContent();
+            _touristRouteRepository.AddTouristRoute(touristRouteModel);
+            _touristRouteRepository.Save();
+            var touristRouteToReturn = _mapper.Map<TouristRoute>(touristRouteModel);
+            return CreatedAtRoute(
+                "GetTouristRouteById",
+                new { touristRouteId = touristRouteToReturn.Id },
+                touristRouteToReturn);
         }
     }
 }
