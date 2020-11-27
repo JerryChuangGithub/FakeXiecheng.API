@@ -1,9 +1,15 @@
 using System;
+using System.Collections.Generic;
 
 namespace FakeXiecheng.API.Dtos
 {
     public class TouristRouteForCreationDto
     {
+        public TouristRouteForCreationDto()
+        {
+            TouristRoutePictures = new List<TouristRoutePictureCreationDto>();
+        }
+
         public string Title { get; set; }
 
         public string Description { get; set; }
@@ -29,5 +35,7 @@ namespace FakeXiecheng.API.Dtos
         public string TripType { get; set; }
 
         public string DepartureCity { get; set; }
+
+        public ICollection<TouristRoutePictureCreationDto> TouristRoutePictures { get; set; }
     }
 }
