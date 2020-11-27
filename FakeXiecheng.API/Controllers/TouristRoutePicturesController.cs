@@ -64,9 +64,7 @@ namespace FakeXiecheng.API.Controllers
                 return NotFound("旅遊路線不存在");
 
             var pictureModel = _mapper.Map<TouristRoutePicture>(touristRoutePictureCreationDto);
-            pictureModel.TouristRouteId = touristRouteId;
-
-            _touristRouteRepository.AddPicture(pictureModel);
+            _touristRouteRepository.AddPicture(touristRouteId, pictureModel);
             _touristRouteRepository.Save();
 
             return CreatedAtRoute(
