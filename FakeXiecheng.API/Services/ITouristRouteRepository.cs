@@ -18,6 +18,8 @@ namespace FakeXiecheng.API.Services
 
         void AddTouristRoute(TouristRoute touristRoute);
 
+        void AddPicture(TouristRoutePicture picture);
+
         bool Save();
     }
 }

@@ -73,6 +73,14 @@ namespace FakeXiecheng.API.Services
             Save();
         }
 
+        public void AddPicture(TouristRoutePicture picture)
+        {
+            if (picture == null)
+                throw new ArgumentNullException(nameof(picture));
+
+            _context.TouristRoutePictures.Add(picture);
+        }
+
         public bool Save()
         {
             return _context.SaveChanges() >= 0;
