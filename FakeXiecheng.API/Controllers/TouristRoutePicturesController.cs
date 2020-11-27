@@ -54,5 +54,16 @@ namespace FakeXiecheng.API.Controllers
 
             return Ok(_mapper.Map<TouristRoutePictureDto>(pictureFromRepo));
         }
+
+        [HttpPost]
+        public IActionResult CreatePicture(
+            [FromRoute]Guid touristRouteId,
+            [FromBody]TouristRoutePictureCreationDto touristRoutePictureCreationDto)
+        {
+            if (_touristRouteRepository.TouristRouteExists(touristRouteId) == false)
+                return NotFound("旅遊路線不存在");
+
+            return NoContent();
+        }
     }
 }
