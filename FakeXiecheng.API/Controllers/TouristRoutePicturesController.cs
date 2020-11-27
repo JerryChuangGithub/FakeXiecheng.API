@@ -42,7 +42,7 @@ namespace FakeXiecheng.API.Controllers
             return Ok(_mapper.Map<IEnumerable<TouristRoutePictureDto>>(picturesFromRepo));
         }
 
-        [HttpGet("{pictureId}")]
+        [HttpGet("{pictureId}", Name = "GetPicture")]
         public IActionResult GetPicture(Guid touristRouteId, int pictureId)
         {
             if (_touristRouteRepository.TouristRouteExists(touristRouteId) == false)
@@ -63,7 +63,16 @@ namespace FakeXiecheng.API.Controllers
             if (_touristRouteRepository.TouristRouteExists(touristRouteId) == false)
                 return NotFound("旅遊路線不存在");
 
-            return NoContent();
+            var pictureModel = _mapper.Map<TouristRoutePicture>(touristRoutePictureCreationDto);
+            pictureModel.TouristRouteId = touristRouteId;
+
+            _touristRouteRepository.AddPicture(pictureModel);
+            _touristRouteRepository.Save();
+
+            return CreatedAtRoute(
+                "GetPicture",
+                new { touristRouteId = pictureModel.TouristRouteId, pictureId = pictureModel.Id },
+                _mapper.Map<TouristRoutePictureDto>(pictureModel));
         }
     }
 }
