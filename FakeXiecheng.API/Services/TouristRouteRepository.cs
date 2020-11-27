@@ -63,5 +63,19 @@ namespace FakeXiecheng.API.Services
         {
             return _context.TouristRoutePictures.FirstOrDefault(x => x.Id == pictureId);
         }
+
+        public void AddTouristRoute(TouristRoute touristRoute)
+        {
+            if (touristRoute == null)
+                throw new ArgumentNullException(nameof(touristRoute));
+
+            _context.TouristRoutes.Add(touristRoute);
+            Save();
+        }
+
+        public bool Save()
+        {
+            return _context.SaveChanges() >= 0;
+        }
     }
 }
