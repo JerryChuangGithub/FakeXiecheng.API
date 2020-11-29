@@ -9,7 +9,9 @@ namespace FakeXiecheng.API.Dtos
 
         public string Description { get; set; }
 
-        public decimal Price { get; set; }
+        public decimal OriginalPrice { get; set; }
+
+        public double? DiscountPrice { get; set; }
 
         public DateTime CreateTime { get; set; }
 
