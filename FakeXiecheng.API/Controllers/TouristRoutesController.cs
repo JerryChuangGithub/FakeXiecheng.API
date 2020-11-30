@@ -6,6 +6,7 @@ using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Models;
 using FakeXiecheng.API.ResourceParameters;
 using FakeXiecheng.API.Services;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FakeXiecheng.API.Controllers
@@ -85,6 +86,24 @@ namespace FakeXiecheng.API.Controllers
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRoute(touristRouteId);
             _mapper.Map(touristRouteForUpdateDto, touristRouteFromRepo);
 
+            _touristRouteRepository.Save();
+
+            return NoContent();
+        }
+
+        [HttpPatch("{touristRouteId}")]
+        public IActionResult PartiallyUpdateTouristRoute(
+            [FromRoute]Guid touristRouteId,
+            [FromBody]JsonPatchDocument<TouristRouteForUpdateDto> patchDocument)
+        {
+            if (_touristRouteRepository.TouristRouteExists(touristRouteId) == false)
+                return NotFound("旅遊路線不存在");
+
+            var touristRouteFromRepo = _touristRouteRepository.GetTouristRoute(touristRouteId);
+            var touristRouteToPatch = _mapper.Map<TouristRouteForUpdateDto>(touristRouteFromRepo);
+            patchDocument.ApplyTo(touristRouteToPatch);
+
+            _mapper.Map(touristRouteToPatch, touristRouteFromRepo);
             _touristRouteRepository.Save();
 
             return NoContent();
