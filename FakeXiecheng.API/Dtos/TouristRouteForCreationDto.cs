@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using FakeXiecheng.API.ValidationAttributes;
 
 namespace FakeXiecheng.API.Dtos
 {
-    public class TouristRouteForCreationDto : IValidatableObject
+    [TouristRouteTitleMustBeDifferentDescription]
+    public class TouristRouteForCreationDto
     {
         [Required(ErrorMessage = "Title 不可為空")]
         [MaxLength(100)]
@@ -46,15 +48,5 @@ namespace FakeXiecheng.API.Dtos
 
         public ICollection<TouristRoutePictureCreationDto> TouristRoutePictures { get; set; }
             = new List<TouristRoutePictureCreationDto>();
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (Title == Description)
-            {
-                yield return new ValidationResult(
-                    "Title 和 Description 不可相同",
-                    new []{ "TouristRouteForCreationDto" });
-            }
-        }
     }
 }
