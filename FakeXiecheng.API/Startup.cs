@@ -4,6 +4,8 @@ using FakeXiecheng.API.Database;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +33,26 @@ namespace FakeXiecheng.API
                 // setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
             })
                 // after that dotnet core 2.0
-                .AddXmlDataContractSerializerFormatters();
+                .AddXmlDataContractSerializerFormatters()
+                .ConfigureApiBehaviorOptions(setupAction =>
+                {
+                    setupAction.InvalidModelStateResponseFactory = context =>
+                    {
+                        var problemDetail = new ValidationProblemDetails(context.ModelState)
+                        {
+                            Type = "Validation",
+                            Title = "資料驗證常敗",
+                            Status = StatusCodes.Status422UnprocessableEntity,
+                            Detail = "請看詳細說明",
+                            Instance = context.HttpContext.Request.Path
+                        };
+                        problemDetail.Extensions.Add("traceId", context.HttpContext.TraceIdentifier);
+                        return new UnprocessableEntityObjectResult(problemDetail)
+                        {
+                            ContentTypes = { "application/problem+json" }
+                        };
+                    };
+                });
 
             services.AddTransient<ITouristRouteRepository, TouristRouteRepository>();
             services.AddDbContext<AppDbContext>(option =>
