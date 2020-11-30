@@ -10,6 +10,7 @@ namespace FakeXiecheng.API.Profiles
         {
             CreateMap<TouristRoutePicture, TouristRoutePictureDto>();
             CreateMap<TouristRoutePictureCreationDto, TouristRoutePicture>();
+            CreateMap<TouristRoutePicture, TouristRoutePictureCreationDto>();
         }
     }
 }
