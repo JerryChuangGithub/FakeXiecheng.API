@@ -84,6 +84,11 @@ namespace FakeXiecheng.API.Services
             _context.TouristRoutePictures.Add(picture);
         }
 
+        public void DeleteTouristRoute(TouristRoute touristRoute)
+        {
+            _context.TouristRoutes.Remove(touristRoute);
+        }
+
         public bool Save()
         {
             return _context.SaveChanges() >= 0;
