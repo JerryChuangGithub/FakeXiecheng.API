@@ -101,7 +101,10 @@ namespace FakeXiecheng.API.Controllers
 
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRoute(touristRouteId);
             var touristRouteToPatch = _mapper.Map<TouristRouteForUpdateDto>(touristRouteFromRepo);
-            patchDocument.ApplyTo(touristRouteToPatch);
+            patchDocument.ApplyTo(touristRouteToPatch, ModelState);
+
+            if (TryValidateModel(touristRouteToPatch) == false)
+                return ValidationProblem(ModelState);
 
             _mapper.Map(touristRouteToPatch, touristRouteFromRepo);
             _touristRouteRepository.Save();
