@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using FakeXiecheng.API.Dtos;
+using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using FakeXiecheng.API.ResourceParameters;
 using FakeXiecheng.API.Services;
@@ -121,6 +122,21 @@ namespace FakeXiecheng.API.Controllers
 
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRoute(touristRouteId);
             _touristRouteRepository.DeleteTouristRoute(touristRouteFromRepo);
+            _touristRouteRepository.Save();
+
+            return NoContent();
+        }
+
+        [HttpDelete("({Ids})")]
+        public IActionResult DeleteByIds(
+            [ModelBinder(typeof(ArrayModelBinder))][FromRoute]IEnumerable<Guid> ids)
+        {
+            var touristRouteIds = ids as Guid[] ?? ids.ToArray();
+            if (touristRouteIds.Length < 1)
+                return BadRequest();
+
+            var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutesByIds(touristRouteIds);
+            _touristRouteRepository.DeleteTouristRoutes(touristRoutesFromRepo);
             _touristRouteRepository.Save();
 
             return NoContent();
