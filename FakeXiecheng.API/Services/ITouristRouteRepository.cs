@@ -8,6 +8,10 @@ namespace FakeXiecheng.API.Services
     {
         IEnumerable<TouristRoute> GetTouristRoutes(string keyword, string ratingOperator, int? ratingValue);
 
+        IEnumerable<TouristRoute> GetTouristRoutesByIds(IEnumerable<Guid> touristRouteIds);
+
+        void DeleteTouristRoutes(IEnumerable<TouristRoute> touristRoutes);
+
         TouristRoute GetTouristRoute(Guid touristRouteId);
 
         bool TouristRouteExists(Guid touristRouteId);

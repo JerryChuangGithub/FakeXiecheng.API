@@ -44,6 +44,16 @@ namespace FakeXiecheng.API.Services
             return query;
         }
 
+        public IEnumerable<TouristRoute> GetTouristRoutesByIds(IEnumerable<Guid> touristRouteIds)
+        {
+            return _context.TouristRoutes.Where(x => touristRouteIds.Contains(x.Id));
+        }
+
+        public void DeleteTouristRoutes(IEnumerable<TouristRoute> touristRoutes)
+        {
+            _context.TouristRoutes.RemoveRange(touristRoutes);
+        }
+
         public TouristRoute GetTouristRoute(Guid touristRouteId)
         {
             return _context.TouristRoutes.Include(x => x.TouristRoutePictures).FirstOrDefault(x => x.Id == touristRouteId);
