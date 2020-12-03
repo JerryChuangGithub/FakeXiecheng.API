@@ -2,7 +2,9 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using FakeXiecheng.API.Dtos;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -14,9 +16,15 @@ namespace FakeXiecheng.API.Controllers
     public class AuthenticateController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        public AuthenticateController(IConfiguration configuration)
+
+        private readonly UserManager<IdentityUser> _userManager;
+
+        public AuthenticateController(
+            IConfiguration configuration,
+            UserManager<IdentityUser> userManager)
         {
             _configuration = configuration;
+            _userManager = userManager;
         }
         
         [HttpGet("login")]
@@ -46,6 +54,24 @@ namespace FakeXiecheng.API.Controllers
             var tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
 
             return Ok(tokenStr);
+        }
+
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
+        {
+            var user = new IdentityUser
+            {
+                UserName = registerDto.Email,
+                Email = registerDto.Email
+            };
+
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            if (result.Succeeded == false)
+            {
+                return BadRequest();
+            }
+            
+            return NoContent();
         }
     }
 }
