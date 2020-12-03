@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using FakeXiecheng.API.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace FakeXiecheng.API.Database
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<IdentityUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
