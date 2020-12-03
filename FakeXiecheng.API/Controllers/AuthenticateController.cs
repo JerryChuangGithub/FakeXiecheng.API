@@ -25,7 +25,8 @@ namespace FakeXiecheng.API.Controllers
             // jwt - payload
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, "fake_user_id")
+                new Claim(JwtRegisteredClaimNames.Sub, "fake_user_id"),
+                new Claim(ClaimTypes.Role, "Admin")
             };
             // jwt - header
             const string signingAlgorithm = SecurityAlgorithms.HmacSha256;
