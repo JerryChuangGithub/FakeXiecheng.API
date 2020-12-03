@@ -58,7 +58,7 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> CreatePictureAsync(
             [FromRoute]Guid touristRouteId,
             [FromBody]TouristRoutePictureCreationDto touristRoutePictureCreationDto)
@@ -77,7 +77,7 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpDelete("{pictureId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> DeletePictureAsync(
             [FromRoute]Guid touristRouteId,
             [FromRoute]int pictureId)
