@@ -6,6 +6,7 @@ using AutoMapper;
 using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Models;
 using FakeXiecheng.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FakeXiecheng.API.Controllers
@@ -57,6 +58,7 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreatePictureAsync(
             [FromRoute]Guid touristRouteId,
             [FromBody]TouristRoutePictureCreationDto touristRoutePictureCreationDto)
@@ -75,6 +77,7 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpDelete("{pictureId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeletePictureAsync(
             [FromRoute]Guid touristRouteId,
             [FromRoute]int pictureId)
