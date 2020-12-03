@@ -30,8 +30,8 @@ namespace FakeXiecheng.API.Controllers
             // jwt - header
             const string signingAlgorithm = SecurityAlgorithms.HmacSha256;
             // signature
-            var secretByte = Encoding.UTF8.GetBytes(_configuration["Authentication:SecretKey"]);
-            var signingKey = new SymmetricSecurityKey(secretByte);
+            var secretBytes = Encoding.UTF8.GetBytes(_configuration["Authentication:SecretKey"]);
+            var signingKey = new SymmetricSecurityKey(secretBytes);
             var signingCredentials = new SigningCredentials(signingKey, signingAlgorithm);
             
             var token = new JwtSecurityToken(
