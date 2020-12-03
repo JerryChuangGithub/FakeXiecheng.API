@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using FakeXiecheng.API.Dtos;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -17,27 +20,48 @@ namespace FakeXiecheng.API.Controllers
     {
         private readonly IConfiguration _configuration;
 
+        private readonly SignInManager<IdentityUser> _signInManager;
+            
         private readonly UserManager<IdentityUser> _userManager;
 
         public AuthenticateController(
             IConfiguration configuration,
+            SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager)
         {
             _configuration = configuration;
+            _signInManager = signInManager;
             _userManager = userManager;
         }
         
-        [HttpGet("login")]
-        public IActionResult Login([FromBody]LoginDto loginDto)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody]LoginDto loginDto)
         {
+            var loginResult = await _signInManager.PasswordSignInAsync(
+                loginDto.Email,
+                loginDto.Password,
+                false,
+                false);
+
+            if (loginResult.Succeeded == false)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByNameAsync(loginDto.Email);
+            var roleNames = await _userManager.GetRolesAsync(user);
+            
             // jwt - payload
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, "fake_user_id"),
                 new Claim(ClaimTypes.Role, "Admin")
             };
+            claims.AddRange(roleNames.Select(roleName => new Claim(ClaimTypes.Role, roleName)));
+
             // jwt - header
             const string signingAlgorithm = SecurityAlgorithms.HmacSha256;
+
             // signature
             var secretBytes = Encoding.UTF8.GetBytes(_configuration["Authentication:SecretKey"]);
             var signingKey = new SymmetricSecurityKey(secretBytes);
