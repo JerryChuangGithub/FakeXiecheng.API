@@ -56,7 +56,6 @@ namespace FakeXiecheng.API.Controllers
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, "fake_user_id"),
-                new Claim(ClaimTypes.Role, "Admin")
             };
             claims.AddRange(roleNames.Select(roleName => new Claim(ClaimTypes.Role, roleName)));
 
