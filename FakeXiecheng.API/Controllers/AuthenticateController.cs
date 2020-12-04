@@ -55,7 +55,7 @@ namespace FakeXiecheng.API.Controllers
             // jwt - payload
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, "fake_user_id"),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
             };
             claims.AddRange(roleNames.Select(roleName => new Claim(ClaimTypes.Role, roleName)));
 
