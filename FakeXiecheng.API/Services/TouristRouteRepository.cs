@@ -116,6 +116,21 @@ namespace FakeXiecheng.API.Services
             _context.TouristRoutePictures.Remove(picture);
         }
 
+        public async Task<ShoppingCart> GetShoppingCartByUserId(string userId)
+        {
+            return await _context.ShoppingCarts
+                .Include(s => s.User)
+                .Include(s => s.ShoppingCartItem)
+                .ThenInclude(li => li.TouristRoute)
+                .Where(s => s.UserId == userId)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task CreateShoppingCart(ShoppingCart shoppingCart)
+        {
+            await _context.ShoppingCarts.AddAsync(shoppingCart);
+        }
+
         public async Task<bool> SaveAsync()
         {
             return await _context.SaveChangesAsync() >= 0;
