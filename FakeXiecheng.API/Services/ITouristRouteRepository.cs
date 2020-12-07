@@ -29,13 +29,13 @@ namespace FakeXiecheng.API.Services
 
         void DeleteTouristRoutePicture(TouristRoutePicture picture);
 
-        Task<ShoppingCart> GetShoppingCartByUserId(string userId);
+        Task<ShoppingCart> GetShoppingCartByUserIdAsync(string userId);
 
-        Task CreateShoppingCart(ShoppingCart shoppingCart);
+        void CreateShoppingCart(ShoppingCart shoppingCart);
 
-        Task AddShoppingCartItem(LineItem lineItem);
+        void AddShoppingCartItem(LineItem lineItem);
 
-        Task<LineItem> GetShoppingCartItemById(int itemId);
+        Task<LineItem> GetShoppingCartItemByIdAsync(int itemId);
 
         void DeleteShoppingCartItem(LineItem lineItem);
 

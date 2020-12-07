@@ -32,7 +32,7 @@ namespace FakeXiecheng.API.Controllers
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetShoppingCart()
+        public async Task<IActionResult> GetShoppingCartAsync()
         {
             var userId = _httpContextAccessor
                 .HttpContext
@@ -40,14 +40,14 @@ namespace FakeXiecheng.API.Controllers
                 .FindFirst(ClaimTypes.NameIdentifier)
                 .Value;
 
-            var shoppingCart = await _touristRepository.GetShoppingCartByUserId(userId);
+            var shoppingCart = await _touristRepository.GetShoppingCartByUserIdAsync(userId);
 
             return Ok(_mapper.Map<ShoppingCartDto>(shoppingCart));
         }
 
         [HttpPost("items")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddShoppingCartItem(
+        public async Task<IActionResult> AddShoppingCartItemAsync(
             [FromBody] AddShoppingCartItemDto addShoppingCartItemDto)
         {
             var userId = _httpContextAccessor
@@ -57,7 +57,7 @@ namespace FakeXiecheng.API.Controllers
                 .Value;
 
             var shoppingCart = await _touristRepository
-                .GetShoppingCartByUserId(userId);
+                .GetShoppingCartByUserIdAsync(userId);
 
             var touristRoute = await _touristRepository
                 .GetTouristRouteAsync(addShoppingCartItemDto.TouristRouteId);
@@ -74,7 +74,7 @@ namespace FakeXiecheng.API.Controllers
                 DiscountPrice = touristRoute.DiscountPrice
             };
 
-            await _touristRepository.AddShoppingCartItem(lineItem);
+            _touristRepository.AddShoppingCartItem(lineItem);
             await _touristRepository.SaveAsync();
 
             return Ok(_mapper.Map<ShoppingCartDto>(shoppingCart));
@@ -82,9 +82,9 @@ namespace FakeXiecheng.API.Controllers
 
         [HttpDelete("items/{itemId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> DeleteShoppingCartItem([FromRoute] int itemId)
+        public async Task<IActionResult> DeleteShoppingCartItemAsync([FromRoute] int itemId)
         {
-            var lineItem = await _touristRepository.GetShoppingCartItemById(itemId);
+            var lineItem = await _touristRepository.GetShoppingCartItemByIdAsync(itemId);
             if (lineItem == null)
                 return NotFound("找不到購物車商品項目");
 

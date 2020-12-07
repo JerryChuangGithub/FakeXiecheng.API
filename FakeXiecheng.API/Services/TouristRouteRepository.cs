@@ -116,7 +116,7 @@ namespace FakeXiecheng.API.Services
             _context.TouristRoutePictures.Remove(picture);
         }
 
-        public async Task<ShoppingCart> GetShoppingCartByUserId(string userId)
+        public async Task<ShoppingCart> GetShoppingCartByUserIdAsync(string userId)
         {
             return await _context.ShoppingCarts
                 .Include(s => s.User)
@@ -126,17 +126,17 @@ namespace FakeXiecheng.API.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task CreateShoppingCart(ShoppingCart shoppingCart)
+        public void CreateShoppingCart(ShoppingCart shoppingCart)
         {
-            await _context.ShoppingCarts.AddAsync(shoppingCart);
+             _context.ShoppingCarts.Add(shoppingCart);
         }
 
-        public async Task AddShoppingCartItem(LineItem lineItem)
+        public void AddShoppingCartItem(LineItem lineItem)
         {
-            await _context.LineItemss.AddAsync(lineItem);
+            _context.LineItemss.Add(lineItem);
         }
 
-        public async Task<LineItem> GetShoppingCartItemById(int itemId)
+        public async Task<LineItem> GetShoppingCartItemByIdAsync(int itemId)
         {
             return await _context.LineItemss.Where(li => li.Id == itemId).FirstOrDefaultAsync();
         }

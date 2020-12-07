@@ -40,7 +40,7 @@ namespace FakeXiecheng.API.Controllers
         }
         
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]LoginDto loginDto)
+        public async Task<IActionResult> LoginAsync([FromBody]LoginDto loginDto)
         {
             var loginResult = await _signInManager.PasswordSignInAsync(
                 loginDto.Email,
@@ -85,7 +85,7 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
+        public async Task<IActionResult> RegisterAsync([FromBody]RegisterDto registerDto)
         {
             var user = new ApplicationUser
             {
@@ -105,7 +105,7 @@ namespace FakeXiecheng.API.Controllers
                 UserId = user.Id
             };
 
-            await _touristRouteRepository.CreateShoppingCart(shoppingCart);
+            _touristRouteRepository.CreateShoppingCart(shoppingCart);
             await _touristRouteRepository.SaveAsync();
             
             return NoContent();
