@@ -39,6 +39,10 @@ namespace FakeXiecheng.API.Services
 
         void DeleteShoppingCartItem(LineItem lineItem);
 
+        Task<IEnumerable<LineItem>> GetShoppingCartItemsByIds(IEnumerable<int> itemIds);
+
+        void DeleteShoppingCartItems(IEnumerable<LineItem> items);
+
         Task<bool> SaveAsync();
     }
 }
