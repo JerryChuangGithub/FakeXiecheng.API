@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using FakeXiecheng.API.Dtos;
+using FakeXiecheng.API.Models;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ namespace FakeXiecheng.API.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         private readonly ITouristRouteRepository _touristRepository;
-        
+
         private IMapper _mapper;
 
         public ShoppingCartController(
@@ -40,7 +41,42 @@ namespace FakeXiecheng.API.Controllers
                 .Value;
 
             var shoppingCart = await _touristRepository.GetShoppingCartByUserId(userId);
-            
+
+            return Ok(_mapper.Map<ShoppingCartDto>(shoppingCart));
+        }
+
+        [HttpPost("items")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddShoppingCartItem(
+            [FromBody] AddShoppingCartItemDto addShoppingCartItemDto)
+        {
+            var userId = _httpContextAccessor
+                .HttpContext
+                .User
+                .FindFirst(ClaimTypes.NameIdentifier)
+                .Value;
+
+            var shoppingCart = await _touristRepository
+                .GetShoppingCartByUserId(userId);
+
+            var touristRoute = await _touristRepository
+                .GetTouristRouteAsync(addShoppingCartItemDto.TouristRouteId);
+            if (touristRoute == null)
+            {
+                return NotFound("旅遊路線不存在");
+            }
+
+            var lineItem = new LineItem
+            {
+                TouristRouteId = touristRoute.Id,
+                ShoppingCartId = shoppingCart.Id,
+                OriginalPrice = touristRoute.OriginalPrice,
+                DiscountPrice = touristRoute.DiscountPrice
+            };
+
+            await _touristRepository.AddShoppingCartItem(lineItem);
+            await _touristRepository.SaveAsync();
+
             return Ok(_mapper.Map<ShoppingCartDto>(shoppingCart));
         }
     }
