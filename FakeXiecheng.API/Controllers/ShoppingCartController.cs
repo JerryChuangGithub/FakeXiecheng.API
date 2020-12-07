@@ -79,5 +79,19 @@ namespace FakeXiecheng.API.Controllers
 
             return Ok(_mapper.Map<ShoppingCartDto>(shoppingCart));
         }
+
+        [HttpDelete("items/{itemId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> DeleteShoppingCartItem([FromRoute] int itemId)
+        {
+            var lineItem = await _touristRepository.GetShoppingCartItemById(itemId);
+            if (lineItem == null)
+                return NotFound("找不到購物車商品項目");
+
+            _touristRepository.DeleteShoppingCartItem(lineItem);
+            await _touristRepository.SaveAsync();
+
+            return NoContent();
+        }
     }
 }
