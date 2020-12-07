@@ -35,6 +35,10 @@ namespace FakeXiecheng.API.Services
 
         Task AddShoppingCartItem(LineItem lineItem);
 
+        Task<LineItem> GetShoppingCartItemById(int itemId);
+
+        void DeleteShoppingCartItem(LineItem lineItem);
+
         Task<bool> SaveAsync();
     }
 }
