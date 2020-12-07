@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using FakeXiecheng.API.Dtos;
+using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -89,6 +92,22 @@ namespace FakeXiecheng.API.Controllers
                 return NotFound("找不到購物車商品項目");
 
             _touristRepository.DeleteShoppingCartItem(lineItem);
+            await _touristRepository.SaveAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("items/({itemIds})")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> DeleteShoppingCartItemsAsync(
+            [ModelBinder(typeof(ArrayModelBinder))] [FromRoute]
+            IEnumerable<int> itemIds)
+        {
+            var lineItems = (await _touristRepository.GetShoppingCartItemsByIds(itemIds)).ToArray();
+            if (lineItems.Length < 1)
+                return NotFound("找不到購物車商品項目");
+
+            _touristRepository.DeleteShoppingCartItems(lineItems);
             await _touristRepository.SaveAsync();
 
             return NoContent();
