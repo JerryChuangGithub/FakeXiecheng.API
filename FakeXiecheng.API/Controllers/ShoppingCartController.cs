@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -111,6 +112,36 @@ namespace FakeXiecheng.API.Controllers
             await _touristRepository.SaveAsync();
 
             return NoContent();
+        }
+
+        [HttpPost("Checkout")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Checkout()
+        {
+            var userId = _httpContextAccessor
+                .HttpContext
+                .User
+                .FindFirst(ClaimTypes.NameIdentifier)
+                .Value;
+
+            var shoppingCart = await _touristRepository
+                .GetShoppingCartByUserIdAsync(userId);
+
+            var order = new Order
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                State = OrderStateEnum.Pending,
+                OrderItems = shoppingCart.ShoppingCartItem,
+                CreateDateUTC = DateTime.UtcNow
+            };
+
+            shoppingCart.ShoppingCartItem = null;
+            
+            _touristRepository.AddOrder(order);
+            await _touristRepository.SaveAsync();
+
+            return Ok(_mapper.Map<OrderDto>(order));
         }
     }
 }
