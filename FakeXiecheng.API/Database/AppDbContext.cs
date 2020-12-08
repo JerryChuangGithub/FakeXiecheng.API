@@ -22,9 +22,11 @@ namespace FakeXiecheng.API.Database
         public DbSet<TouristRoutePicture> TouristRoutePictures { get; set; }
 
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
-        
+
+        public DbSet<Order> Orders { get; set; }
+
         public DbSet<LineItem> LineItemss { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // modelBuilder.Entity<TouristRoute>().HasData(new TouristRoute()
@@ -36,27 +38,27 @@ namespace FakeXiecheng.API.Database
             //     CreateTime = DateTime.UtcNow
             // });
 
-            var touristRouteJsonData = 
+            var touristRouteJsonData =
                 File.ReadAllText(
                     Path.GetDirectoryName(
                         Assembly.GetExecutingAssembly().Location) +
-                        @"/Database/touristRoutesMockData.json");
+                    @"/Database/touristRoutesMockData.json");
 
             IList<TouristRoute> touristRoutes =
                 JsonConvert
-                    .DeserializeObject<IList<TouristRoute>>(touristRouteJsonData); 
+                    .DeserializeObject<IList<TouristRoute>>(touristRouteJsonData);
 
             modelBuilder.Entity<TouristRoute>().HasData(touristRoutes);
 
-            var touristRoutePictureJsonData = 
+            var touristRoutePictureJsonData =
                 File.ReadAllText(
                     Path.GetDirectoryName(
                         Assembly.GetExecutingAssembly().Location) +
-                        @"/Database/touristRoutePicturesMockData.json");
+                    @"/Database/touristRoutePicturesMockData.json");
 
             IList<TouristRoutePicture> touristRoutePictures =
                 JsonConvert
-                    .DeserializeObject<IList<TouristRoutePicture>>(touristRoutePictureJsonData); 
+                    .DeserializeObject<IList<TouristRoutePicture>>(touristRoutePictureJsonData);
 
             modelBuilder.Entity<TouristRoutePicture>().HasData(touristRoutePictures);
 
