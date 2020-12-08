@@ -43,6 +43,8 @@ namespace FakeXiecheng.API.Services
 
         void DeleteShoppingCartItems(IEnumerable<LineItem> items);
 
+        void AddOrder(Order order);
+
         Task<bool> SaveAsync();
     }
 }

@@ -156,6 +156,11 @@ namespace FakeXiecheng.API.Services
             _context.LineItemss.RemoveRange(items);
         }
 
+        public void AddOrder(Order order)
+        {
+            _context.Orders.Add(order);
+        }
+
         public async Task<bool> SaveAsync()
         {
             return await _context.SaveChangesAsync() >= 0;
