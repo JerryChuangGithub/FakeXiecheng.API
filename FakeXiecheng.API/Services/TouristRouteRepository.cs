@@ -161,6 +161,11 @@ namespace FakeXiecheng.API.Services
             _context.Orders.Add(order);
         }
 
+        public async Task<IEnumerable<Order>> GetOrdersByUserId(string userId)
+        {
+            return await _context.Orders.Where(o => o.UserId == userId).ToArrayAsync();
+        }
+
         public async Task<bool> SaveAsync()
         {
             return await _context.SaveChangesAsync() >= 0;

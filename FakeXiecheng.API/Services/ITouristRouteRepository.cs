@@ -45,6 +45,8 @@ namespace FakeXiecheng.API.Services
 
         void AddOrder(Order order);
 
+        Task<IEnumerable<Order>> GetOrdersByUserId(string userId);
+
         Task<bool> SaveAsync();
     }
 }
