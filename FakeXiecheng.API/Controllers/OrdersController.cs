@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -43,6 +44,21 @@ namespace FakeXiecheng.API.Controllers
             var orders = await _touristRepository.GetOrdersByUserId(userId);
 
             return Ok(_mapper.Map<IEnumerable<OrderDto>>(orders));
+        }
+
+        [HttpGet("{orderId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetOrderById([FromRoute] Guid orderId)
+        {
+            var userId = _httpContextAccessor
+                .HttpContext
+                .User
+                .FindFirst(ClaimTypes.NameIdentifier)
+                .Value;
+
+            var order = await _touristRepository.GetOrderById(orderId);
+
+            return Ok(_mapper.Map<OrderDto>(order));
         }
     }
 }
