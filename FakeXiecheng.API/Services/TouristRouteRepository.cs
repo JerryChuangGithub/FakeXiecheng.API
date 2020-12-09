@@ -166,6 +166,14 @@ namespace FakeXiecheng.API.Services
             return await _context.Orders.Where(o => o.UserId == userId).ToArrayAsync();
         }
 
+        public async Task<Order> GetOrderById(Guid orderId)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderItems).ThenInclude(oi => oi.TouristRoute)
+                .Where(o => o.Id == orderId)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<bool> SaveAsync()
         {
             return await _context.SaveChangesAsync() >= 0;
