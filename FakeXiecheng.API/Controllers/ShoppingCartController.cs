@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -11,6 +12,8 @@ using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FakeXiecheng.API.Controllers
 {
@@ -22,16 +25,20 @@ namespace FakeXiecheng.API.Controllers
 
         private readonly ITouristRouteRepository _touristRepository;
 
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
+
+        private readonly IHttpClientFactory _httpClientFactory;
 
         public ShoppingCartController(
             IHttpContextAccessor httpContextAccessor,
             ITouristRouteRepository touristRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IHttpClientFactory httpClientFactory)
         {
             _httpContextAccessor = httpContextAccessor;
             _touristRepository = touristRepository;
             _mapper = mapper;
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpGet]
@@ -137,11 +144,54 @@ namespace FakeXiecheng.API.Controllers
             };
 
             shoppingCart.ShoppingCartItem = null;
-            
+
             _touristRepository.AddOrder(order);
             await _touristRepository.SaveAsync();
 
             return Ok(_mapper.Map<OrderDto>(order));
+        }
+
+        [HttpPost("{orderId}/PlaceOrder")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> PlaceOrder([FromRoute] Guid orderId)
+        {
+            var userId = _httpContextAccessor
+                .HttpContext
+                .User
+                .FindFirst(ClaimTypes.NameIdentifier)
+                .Value;
+
+            var order = await _touristRepository.GetOrderById(orderId);
+            order.PaymentProcessing();
+            await this._touristRepository.SaveAsync();
+
+            var httpClient = _httpClientFactory.CreateClient();
+            const string url = @"http://localhost:5000/api/FakeVanderPaymentProcess?orderNumber={0}&returnFault={1}";
+            var response = await httpClient.PostAsync(string.Format(url, order.Id, false), null);
+
+            var isApproved = false;
+            var transactionMetadata = string.Empty;
+
+            if (response.IsSuccessStatusCode)
+            {
+                transactionMetadata = await response.Content.ReadAsStringAsync();
+                var jsonObject = (JObject) JsonConvert.DeserializeObject(transactionMetadata);
+                isApproved = jsonObject["approved"].Value<bool>();
+            }
+
+            if (isApproved)
+            {
+                order.PaymentApprove();
+            }
+            else
+            {
+                order.PaymentReject();
+            }
+
+            order.TransactionMetadata = transactionMetadata;
+            await _touristRepository.SaveAsync();
+
+            return Ok();
         }
     }
 }
