@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeXiecheng.API.Database;
+using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +18,7 @@ namespace FakeXiecheng.API.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<TouristRoute>> GetTouristRoutesAsync(
+        public async Task<PaginationList<TouristRoute>> GetTouristRoutesAsync(
             string keyword,
             string ratingOperator,
             int? ratingValue,
@@ -44,11 +45,7 @@ namespace FakeXiecheng.API.Services
                 };
             }
 
-            var skip = (pageNumber - 1) * pageSize;
-            query = query.Skip(skip);
-            query = query.Take(pageSize);
-
-            return await query.ToArrayAsync();
+            return await PaginationList<TouristRoute>.Create(pageNumber, pageSize, query);
         }
 
         public async Task<IEnumerable<TouristRoute>> GetTouristRoutesByIdsAsync(IEnumerable<Guid> touristRouteIds)
