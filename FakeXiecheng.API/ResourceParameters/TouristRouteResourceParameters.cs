@@ -8,7 +8,8 @@ namespace FakeXiecheng.API.ResourceParameters
 
         public string Keyword { get; set; }
 
-        public string Rating {
+        public string Rating
+        {
             get => _rating;
             set
             {
@@ -30,5 +31,35 @@ namespace FakeXiecheng.API.ResourceParameters
         public string RatingOperator { get; set; }
 
         public int? RatingValue { get; set; }
+
+        private int _pageNumber = 1;
+
+        public int PageNumber
+        {
+            get => _pageNumber;
+            set
+            {
+                if (value > 0)
+                {
+                    _pageNumber = value;
+                }
+            }
+        }
+
+        private int _pageSize = 10;
+
+        private const int MaxPageSize = 50;
+
+        public int PageSize
+        {
+            get => _pageSize;
+            set
+            {
+                if (value > 0)
+                {
+                    _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
+                }
+            }
+        }
     }
 }
