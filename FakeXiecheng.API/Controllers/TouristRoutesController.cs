@@ -37,7 +37,12 @@ namespace FakeXiecheng.API.Controllers
         public async Task<IActionResult> GetTouristRoutesAsync([FromQuery]TouristRouteResourceParameters parameters)
         {
             var touristRoutesFromRepo = await _touristRouteRepository
-                .GetTouristRoutesAsync(parameters.Keyword, parameters.RatingOperator, parameters.RatingValue);
+                .GetTouristRoutesAsync(
+                    parameters.Keyword, 
+                    parameters.RatingOperator, 
+                    parameters.RatingValue,
+                    parameters.PageSize,
+                    parameters.PageNumber);
 
             if (touristRoutesFromRepo == null || touristRoutesFromRepo.Any() == false)
             {

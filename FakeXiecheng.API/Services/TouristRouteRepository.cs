@@ -20,7 +20,9 @@ namespace FakeXiecheng.API.Services
         public async Task<IEnumerable<TouristRoute>> GetTouristRoutesAsync(
             string keyword,
             string ratingOperator,
-            int? ratingValue)
+            int? ratingValue,
+            int pageSize,
+            int pageNumber)
         {
             IQueryable<TouristRoute> query = _context
                 .TouristRoutes
@@ -41,6 +43,10 @@ namespace FakeXiecheng.API.Services
                     _ => query.Where(r => r.Rating == ratingValue)
                 };
             }
+
+            var skip = (pageNumber - 1) * pageSize;
+            query = query.Skip(skip);
+            query = query.Take(pageSize);
 
             return await query.ToArrayAsync();
         }
@@ -128,7 +134,7 @@ namespace FakeXiecheng.API.Services
 
         public void CreateShoppingCart(ShoppingCart shoppingCart)
         {
-             _context.ShoppingCarts.Add(shoppingCart);
+            _context.ShoppingCarts.Add(shoppingCart);
         }
 
         public void AddShoppingCartItem(LineItem lineItem)
