@@ -34,15 +34,17 @@ namespace FakeXiecheng.API.Controllers
         // if action argument not equal query string, can use [FromQuery(Name = "xxx")]
         [HttpGet]
         [HttpHead]
-        public async Task<IActionResult> GetTouristRoutesAsync([FromQuery]TouristRouteResourceParameters parameters)
+        public async Task<IActionResult> GetTouristRoutesAsync(
+            [FromQuery]TouristRouteResourceParameters parameters,
+            [FromQuery]PaginationResourceParameters paginationParameters)
         {
             var touristRoutesFromRepo = await _touristRouteRepository
                 .GetTouristRoutesAsync(
                     parameters.Keyword, 
                     parameters.RatingOperator, 
                     parameters.RatingValue,
-                    parameters.PageSize,
-                    parameters.PageNumber);
+                    paginationParameters.PageSize,
+                    paginationParameters.PageNumber);
 
             if (touristRoutesFromRepo == null || touristRoutesFromRepo.Any() == false)
             {
