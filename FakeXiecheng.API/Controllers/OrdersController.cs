@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using FakeXiecheng.API.Dtos;
+using FakeXiecheng.API.ResourceParameters;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +34,7 @@ namespace FakeXiecheng.API.Controllers
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetOrders()
+        public async Task<IActionResult> GetOrders([FromQuery] PaginationResourceParameters paginationParameters)
         {
             var userId = _httpContextAccessor
                 .HttpContext
@@ -41,7 +42,10 @@ namespace FakeXiecheng.API.Controllers
                 .FindFirst(ClaimTypes.NameIdentifier)
                 .Value;
 
-            var orders = await _touristRepository.GetOrdersByUserId(userId);
+            var orders = await _touristRepository.GetOrdersByUserId(
+                userId,
+                paginationParameters.PageSize,
+                paginationParameters.PageNumber);
 
             return Ok(_mapper.Map<IEnumerable<OrderDto>>(orders));
         }
