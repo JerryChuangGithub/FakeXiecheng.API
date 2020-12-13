@@ -11,6 +11,9 @@ using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Newtonsoft.Json;
 
 namespace FakeXiecheng.API.Controllers
 {
@@ -22,17 +25,22 @@ namespace FakeXiecheng.API.Controllers
 
         private readonly ITouristRouteRepository _touristRouteRepository;
 
+        private readonly IUrlHelper _urlHelper;
+
         public TouristRoutesController(
             IMapper mapper,
-            ITouristRouteRepository touristRouteRepository)
+            ITouristRouteRepository touristRouteRepository,
+            IUrlHelperFactory urlHelperFactory,
+            IActionContextAccessor actionContextAccessor)
         {
             _mapper = mapper;
             _touristRouteRepository = touristRouteRepository;
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
         }
 
         // api/TouristRoutes?keyword=argument
         // if action argument not equal query string, can use [FromQuery(Name = "xxx")]
-        [HttpGet]
+        [HttpGet(Name = "GetTouristRoutes")]
         [HttpHead]
         public async Task<IActionResult> GetTouristRoutesAsync(
             [FromQuery]TouristRouteResourceParameters parameters,
@@ -52,6 +60,26 @@ namespace FakeXiecheng.API.Controllers
             }
 
             var touristRoutesDto = _mapper.Map<IEnumerable<TouristRouteDto>>(touristRoutesFromRepo);
+
+            var previousPageLink = touristRoutesFromRepo.HasPrevious
+                ? GenerateTouristRouteResourceUrl(parameters, paginationParameters, ResourceUriType.PreviousPage)
+                : null;
+
+            var nextPageLink = touristRoutesFromRepo.HasNext
+                ? GenerateTouristRouteResourceUrl(parameters, paginationParameters, ResourceUriType.NextPage)
+                : null;
+
+            var paginationMetadata = new
+            {
+                previousPageLink,
+                nextPageLink,
+                totalCount = touristRoutesFromRepo.TotalCount,
+                pageSize = touristRoutesFromRepo.PageSize,
+                currentPage = touristRoutesFromRepo.CurrentPage,
+                totalPage = touristRoutesFromRepo.TotalPage
+            };
+
+            Response.Headers.Add("x-pagination", JsonConvert.SerializeObject(paginationMetadata));
 
             return Ok(touristRoutesDto);
         }
@@ -155,5 +183,41 @@ namespace FakeXiecheng.API.Controllers
 
             return NoContent();
         }
+
+        private string GenerateTouristRouteResourceUrl(
+            [FromQuery] TouristRouteResourceParameters parameters,
+            [FromQuery] PaginationResourceParameters paginationParameters,
+            ResourceUriType type)
+        {
+            return type switch
+            {
+                ResourceUriType.PreviousPage => _urlHelper.Link(
+                    "GetTouristRoutes",
+                    new
+                    {
+                        keyword = parameters.Keyword,
+                        rating = parameters.Rating,
+                        pageNumber = paginationParameters.PageNumber - 1,
+                        pageSize = paginationParameters.PageSize
+                    }),
+                ResourceUriType.NextPage => _urlHelper.Link(
+                    "GetTouristRoutes",
+                    new
+                    {
+                        keyword = parameters.Keyword,
+                        rating = parameters.Rating,
+                        pageNumber = paginationParameters.PageNumber + 1,
+                        pageSize = paginationParameters.PageSize
+                    }),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
+        }
+
+    }
+
+    internal enum ResourceUriType
+    {
+        PreviousPage,
+        NextPage
     }
 }
