@@ -43,13 +43,13 @@ namespace FakeXiecheng.API.Controllers
         [HttpGet(Name = "GetTouristRoutes")]
         [HttpHead]
         public async Task<IActionResult> GetTouristRoutesAsync(
-            [FromQuery]TouristRouteResourceParameters parameters,
-            [FromQuery]PaginationResourceParameters paginationParameters)
+            [FromQuery] TouristRouteResourceParameters parameters,
+            [FromQuery] PaginationResourceParameters paginationParameters)
         {
             var touristRoutesFromRepo = await _touristRouteRepository
                 .GetTouristRoutesAsync(
-                    parameters.Keyword, 
-                    parameters.RatingOperator, 
+                    parameters.Keyword,
+                    parameters.RatingOperator,
                     parameters.RatingValue,
                     paginationParameters.PageSize,
                     paginationParameters.PageNumber);
@@ -102,7 +102,8 @@ namespace FakeXiecheng.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> CreateTouristRouteAsync([FromBody]TouristRouteForCreationDto touristRouteForCreationDto)
+        public async Task<IActionResult> CreateTouristRouteAsync(
+            [FromBody] TouristRouteForCreationDto touristRouteForCreationDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteForCreationDto);
             _touristRouteRepository.AddTouristRoute(touristRouteModel);
@@ -110,15 +111,15 @@ namespace FakeXiecheng.API.Controllers
             var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteModel);
             return CreatedAtRoute(
                 "GetTouristRouteById",
-                new { touristRouteId = touristRouteToReturn.Id },
+                new {touristRouteId = touristRouteToReturn.Id},
                 touristRouteToReturn);
         }
 
         [HttpPut("{touristRouteId:Guid}")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdateTouristRouteAsync(
-            [FromRoute]Guid touristRouteId,
-            [FromBody]TouristRouteForUpdateDto touristRouteForUpdateDto)
+            [FromRoute] Guid touristRouteId,
+            [FromBody] TouristRouteForUpdateDto touristRouteForUpdateDto)
         {
             if (await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId) == false)
                 return NotFound("旅遊路線不存在");
@@ -134,8 +135,8 @@ namespace FakeXiecheng.API.Controllers
         [HttpPatch("{touristRouteId}")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PartiallyUpdateTouristRouteAsync(
-            [FromRoute]Guid touristRouteId,
-            [FromBody]JsonPatchDocument<TouristRouteForUpdateDto> patchDocument)
+            [FromRoute] Guid touristRouteId,
+            [FromBody] JsonPatchDocument<TouristRouteForUpdateDto> patchDocument)
         {
             if (await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId) == false)
                 return NotFound("旅遊路線不存在");
@@ -156,7 +157,7 @@ namespace FakeXiecheng.API.Controllers
         [HttpDelete("{touristRouteId}")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> DeleteTouristRouteAsync(
-            [FromRoute]Guid touristRouteId)
+            [FromRoute] Guid touristRouteId)
         {
             if (await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId) == false)
                 return NotFound("旅遊路線不存在");
@@ -171,7 +172,8 @@ namespace FakeXiecheng.API.Controllers
         [HttpDelete("({Ids})")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> DeleteByIdsAsync(
-            [ModelBinder(typeof(ArrayModelBinder))][FromRoute]IEnumerable<Guid> ids)
+            [ModelBinder(typeof(ArrayModelBinder))] [FromRoute]
+            IEnumerable<Guid> ids)
         {
             var touristRouteIds = ids as Guid[] ?? ids.ToArray();
             if (touristRouteIds.Length < 1)
