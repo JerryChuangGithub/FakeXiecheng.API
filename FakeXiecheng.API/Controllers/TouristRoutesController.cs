@@ -52,7 +52,8 @@ namespace FakeXiecheng.API.Controllers
                     parameters.RatingOperator,
                     parameters.RatingValue,
                     paginationParameters.PageSize,
-                    paginationParameters.PageNumber);
+                    paginationParameters.PageNumber,
+                    parameters.OrderBy);
 
             if (touristRoutesFromRepo == null || touristRoutesFromRepo.Any() == false)
             {

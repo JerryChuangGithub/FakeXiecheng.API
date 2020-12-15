@@ -23,7 +23,8 @@ namespace FakeXiecheng.API.Services
             string ratingOperator,
             int? ratingValue,
             int pageSize,
-            int pageNumber)
+            int pageNumber,
+            string orderBy)
         {
             IQueryable<TouristRoute> query = _context
                 .TouristRoutes
@@ -43,6 +44,14 @@ namespace FakeXiecheng.API.Services
                     "lessThan" => query.Where(r => r.Rating <= ratingValue),
                     _ => query.Where(r => r.Rating == ratingValue)
                 };
+            }
+
+            if (string.IsNullOrWhiteSpace(orderBy) == false)
+            {
+                if (orderBy.ToLowerInvariant() == "originalprice")
+                {
+                    query = query.OrderBy(r => r.OriginalPrice);
+                }
             }
 
             return await PaginationList<TouristRoute>.Create(pageNumber, pageSize, query);
