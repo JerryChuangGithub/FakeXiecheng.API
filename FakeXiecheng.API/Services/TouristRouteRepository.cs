@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeXiecheng.API.Database;
+using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +14,14 @@ namespace FakeXiecheng.API.Services
     {
         private readonly AppDbContext _context;
 
-        public TouristRouteRepository(AppDbContext context)
+        private readonly IPropertyMappingService _propertyMappingService;
+        
+        public TouristRouteRepository(
+            AppDbContext context,
+            IPropertyMappingService propertyMappingService)
         {
             _context = context;
+            _propertyMappingService = propertyMappingService;
         }
 
         public async Task<PaginationList<TouristRoute>> GetTouristRoutesAsync(
@@ -48,10 +54,10 @@ namespace FakeXiecheng.API.Services
 
             if (string.IsNullOrWhiteSpace(orderBy) == false)
             {
-                if (orderBy.ToLowerInvariant() == "originalprice")
-                {
-                    query = query.OrderBy(r => r.OriginalPrice);
-                }
+                var touristRouteMappingDictionary =
+                    _propertyMappingService.GetPropertyMapping<TouristRouteDto, TouristRoute>();
+
+                query = query.ApplySort(orderBy, touristRouteMappingDictionary);
             }
 
             return await PaginationList<TouristRoute>.Create(pageNumber, pageSize, query);
