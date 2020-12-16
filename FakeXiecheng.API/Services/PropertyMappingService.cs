@@ -36,5 +36,28 @@ namespace FakeXiecheng.API.Services
             
             throw new Exception($"Cannot find exact property mapping instance for <{typeof(TSource)},{typeof(TDestination)}>");
         }
+
+        public bool IsMappingExists<TSource, TDestination>(string orderBy)
+        {
+            if (string.IsNullOrWhiteSpace(orderBy))
+                return true;
+
+            var mappingDictionary = GetPropertyMapping<TSource, TDestination>();
+            
+            foreach (var order in orderBy.Split(','))
+            {
+                var trimmedOrder = order.Trim();
+                var indexOfFirstSpace = trimmedOrder.IndexOf(" ", StringComparison.Ordinal);
+
+                var propertyName = indexOfFirstSpace == -1
+                    ? trimmedOrder
+                    : trimmedOrder.Remove(indexOfFirstSpace);
+
+                if (mappingDictionary.ContainsKey(propertyName) == false)
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

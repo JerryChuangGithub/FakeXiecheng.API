@@ -23,17 +23,21 @@ namespace FakeXiecheng.API.Controllers
     {
         private readonly IMapper _mapper;
 
+        private readonly IPropertyMappingService _propertyMappingService;
+        
         private readonly ITouristRouteRepository _touristRouteRepository;
 
         private readonly IUrlHelper _urlHelper;
 
         public TouristRoutesController(
             IMapper mapper,
+            IPropertyMappingService propertyMappingService,
             ITouristRouteRepository touristRouteRepository,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor)
         {
             _mapper = mapper;
+            _propertyMappingService = propertyMappingService;
             _touristRouteRepository = touristRouteRepository;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
         }
@@ -46,6 +50,11 @@ namespace FakeXiecheng.API.Controllers
             [FromQuery] TouristRouteResourceParameters parameters,
             [FromQuery] PaginationResourceParameters paginationParameters)
         {
+            if (_propertyMappingService.IsMappingExists<TouristRouteDto, TouristRoute>(parameters.OrderBy) == false)
+            {
+                return BadRequest("排序參數不合法");
+            }
+            
             var touristRoutesFromRepo = await _touristRouteRepository
                 .GetTouristRoutesAsync(
                     parameters.Keyword,
