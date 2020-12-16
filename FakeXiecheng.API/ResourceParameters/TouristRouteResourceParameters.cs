@@ -33,5 +33,7 @@ namespace FakeXiecheng.API.ResourceParameters
         public int? RatingValue { get; set; }
 
         public string OrderBy { get; set; }
+
+        public string Fields { get; set; }
     }
 }

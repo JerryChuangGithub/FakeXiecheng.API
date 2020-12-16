@@ -91,7 +91,7 @@ namespace FakeXiecheng.API.Controllers
 
             Response.Headers.Add("x-pagination", JsonConvert.SerializeObject(paginationMetadata));
 
-            return Ok(touristRoutesDto);
+            return Ok(touristRoutesDto.ShapeData(parameters.Fields));
         }
 
         [HttpGet("{touristRouteId:Guid}", Name = "GetTouristRouteById")]
@@ -211,7 +211,8 @@ namespace FakeXiecheng.API.Controllers
                         rating = parameters.Rating,
                         pageNumber = paginationParameters.PageNumber - 1,
                         pageSize = paginationParameters.PageSize,
-                        orderBy = parameters.OrderBy
+                        orderBy = parameters.OrderBy,
+                        fields = parameters.Fields
                     }),
                 ResourceUriType.NextPage => _urlHelper.Link(
                     "GetTouristRoutes",
@@ -221,7 +222,8 @@ namespace FakeXiecheng.API.Controllers
                         rating = parameters.Rating,
                         pageNumber = paginationParameters.PageNumber + 1,
                         pageSize = paginationParameters.PageSize,
-                        orderBy = parameters.OrderBy
+                        orderBy = parameters.OrderBy,
+                        fields = parameters.Fields
                     }),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
