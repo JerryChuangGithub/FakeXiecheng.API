@@ -201,7 +201,8 @@ namespace FakeXiecheng.API.Controllers
                         keyword = parameters.Keyword,
                         rating = parameters.Rating,
                         pageNumber = paginationParameters.PageNumber - 1,
-                        pageSize = paginationParameters.PageSize
+                        pageSize = paginationParameters.PageSize,
+                        orderBy = parameters.OrderBy
                     }),
                 ResourceUriType.NextPage => _urlHelper.Link(
                     "GetTouristRoutes",
@@ -210,7 +211,8 @@ namespace FakeXiecheng.API.Controllers
                         keyword = parameters.Keyword,
                         rating = parameters.Rating,
                         pageNumber = paginationParameters.PageNumber + 1,
-                        pageSize = paginationParameters.PageSize
+                        pageSize = paginationParameters.PageSize,
+                        orderBy = parameters.OrderBy
                     }),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
