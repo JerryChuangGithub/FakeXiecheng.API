@@ -54,7 +54,12 @@ namespace FakeXiecheng.API.Controllers
             {
                 return BadRequest("排序參數不合法");
             }
-            
+
+            if (_propertyMappingService.IsPropertiesExists<TouristRouteDto>(parameters.Fields) == false)
+            {
+                return BadRequest("塑形參數不正確");
+            }
+
             var touristRoutesFromRepo = await _touristRouteRepository
                 .GetTouristRoutesAsync(
                     parameters.Keyword,
@@ -100,6 +105,11 @@ namespace FakeXiecheng.API.Controllers
             Guid touristRouteId,
             string fields)
         {
+            if (_propertyMappingService.IsPropertiesExists<TouristRouteDto>(fields) == false)
+            {
+                return BadRequest("塑形參數不正確");
+            }
+
             var touristRouteFromRepo = await _touristRouteRepository.GetTouristRouteAsync(touristRouteId);
 
             if (touristRouteFromRepo == null)
