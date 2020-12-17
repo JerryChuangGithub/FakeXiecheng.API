@@ -96,7 +96,9 @@ namespace FakeXiecheng.API.Controllers
 
         [HttpGet("{touristRouteId:Guid}", Name = "GetTouristRouteById")]
         [HttpHead("{touristRouteId:Guid}")]
-        public async Task<IActionResult> GetTouristRouteByIdAsync(Guid touristRouteId)
+        public async Task<IActionResult> GetTouristRouteByIdAsync(
+            Guid touristRouteId,
+            string fields)
         {
             var touristRouteFromRepo = await _touristRouteRepository.GetTouristRouteAsync(touristRouteId);
 
@@ -107,7 +109,7 @@ namespace FakeXiecheng.API.Controllers
 
             var touristRouteDto = _mapper.Map<TouristRouteDto>(touristRouteFromRepo);
 
-            return Ok(touristRouteDto);
+            return Ok(touristRouteDto.ShapeData(fields));
         }
 
         [HttpPost]
