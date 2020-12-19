@@ -24,7 +24,7 @@ namespace FakeXiecheng.API.Controllers
         private readonly IMapper _mapper;
 
         private readonly IPropertyMappingService _propertyMappingService;
-        
+
         private readonly ITouristRouteRepository _touristRouteRepository;
 
         private readonly IUrlHelper _urlHelper;
@@ -135,10 +135,14 @@ namespace FakeXiecheng.API.Controllers
             _touristRouteRepository.AddTouristRoute(touristRouteModel);
             await _touristRouteRepository.SaveAsync();
             var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteModel);
+
+            var result = touristRouteToReturn.ShapeData(null) as IDictionary<string, object>;
+            result["links"] = CreateLinkForTouristRoute(touristRouteToReturn.Id, null);
+
             return CreatedAtRoute(
                 "GetTouristRouteById",
-                new {touristRouteId = touristRouteToReturn.Id},
-                touristRouteToReturn);
+                new { touristRouteId = result["Id"] },
+                result);
         }
 
         [HttpPut("{touristRouteId:Guid}", Name = "UpdateTouristRoute")]
