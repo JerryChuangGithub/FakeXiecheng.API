@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -14,6 +13,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 
 namespace FakeXiecheng.API.Controllers
@@ -49,8 +49,12 @@ namespace FakeXiecheng.API.Controllers
         [HttpHead]
         public async Task<IActionResult> GetTouristRoutesAsync(
             [FromQuery] TouristRouteResourceParameters parameters,
-            [FromQuery] PaginationResourceParameters paginationParameters)
+            [FromQuery] PaginationResourceParameters paginationParameters,
+            [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (MediaTypeHeaderValue.TryParse(mediaType, out var parsedMediaType) == false)
+                return BadRequest();
+
             if (_propertyMappingService.IsMappingExists<TouristRouteDto, TouristRoute>(parameters.OrderBy) == false)
             {
                 return BadRequest("排序參數不合法");
@@ -97,18 +101,23 @@ namespace FakeXiecheng.API.Controllers
 
             Response.Headers.Add("x-pagination", JsonConvert.SerializeObject(paginationMetadata));
 
-            var shapeDataDtoList = touristRoutesDto.ShapeData(parameters.Fields).Select(t =>
-            {
-                var result = t as IDictionary<string, object>;
-                result["Links"] = CreateLinkForTouristRoute((Guid)result["Id"], null);
-                return result;
-            });
+            var shapeDataDtoList = touristRoutesDto.ShapeData(parameters.Fields);
 
-            return Ok(new
+            if (parsedMediaType.ToString() == "application/vnd.jerry.hateoas+json")
             {
-                Value = shapeDataDtoList,
-                Links = CreateLinkForTouristRouteList(parameters, paginationParameters)
-            });
+                return Ok(new
+                {
+                    Value = shapeDataDtoList.Select(t =>
+                    {
+                        var result = t as IDictionary<string, object>;
+                        result["Links"] = CreateLinkForTouristRoute((Guid) result["Id"], null);
+                        return result;
+                    }),
+                    Links = CreateLinkForTouristRouteList(parameters, paginationParameters)
+                });
+            }
+
+            return Ok(shapeDataDtoList);
         }
 
         [HttpGet("{touristRouteId:Guid}", Name = "GetTouristRouteById")]
