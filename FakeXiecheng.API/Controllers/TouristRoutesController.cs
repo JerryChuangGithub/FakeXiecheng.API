@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -96,7 +97,18 @@ namespace FakeXiecheng.API.Controllers
 
             Response.Headers.Add("x-pagination", JsonConvert.SerializeObject(paginationMetadata));
 
-            return Ok(touristRoutesDto.ShapeData(parameters.Fields));
+            var shapeDataDtoList = touristRoutesDto.ShapeData(parameters.Fields).Select(t =>
+            {
+                var result = t as IDictionary<string, object>;
+                result["Links"] = CreateLinkForTouristRoute((Guid)result["Id"], null);
+                return result;
+            });
+
+            return Ok(new
+            {
+                Value = shapeDataDtoList,
+                Links = CreateLinkForTouristRouteList(parameters, paginationParameters)
+            });
         }
 
         [HttpGet("{touristRouteId:Guid}", Name = "GetTouristRouteById")]
@@ -126,7 +138,7 @@ namespace FakeXiecheng.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateTouristRoute")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> CreateTouristRouteAsync(
             [FromBody] TouristRouteForCreationDto touristRouteForCreationDto)
