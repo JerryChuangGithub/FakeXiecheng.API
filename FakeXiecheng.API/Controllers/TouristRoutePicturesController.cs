@@ -27,7 +27,7 @@ namespace FakeXiecheng.API.Controllers
             _touristRouteRepository = touristRouteRepository ?? throw new ArgumentNullException(nameof(touristRouteRepository));
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetPictureListForTouristRoute")]
         public async Task<IActionResult> GetPictureListForTouristRouteAsync(Guid touristRouteId)
         {
             if (await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId) == false)
@@ -57,7 +57,7 @@ namespace FakeXiecheng.API.Controllers
             return Ok(_mapper.Map<TouristRoutePictureDto>(pictureFromRepo));
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateTouristRoutePicture")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> CreatePictureAsync(
             [FromRoute]Guid touristRouteId,

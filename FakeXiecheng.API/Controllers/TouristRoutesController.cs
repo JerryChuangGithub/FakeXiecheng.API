@@ -119,7 +119,11 @@ namespace FakeXiecheng.API.Controllers
 
             var touristRouteDto = _mapper.Map<TouristRouteDto>(touristRouteFromRepo);
 
-            return Ok(touristRouteDto.ShapeData(fields));
+            var linkDtos = CreateLinkForTouristRoute(touristRouteId, fields);
+            var result = touristRouteDto.ShapeData(fields) as IDictionary<string, object>;
+            result.Add("Links", linkDtos);
+
+            return Ok(result);
         }
 
         [HttpPost]
@@ -137,7 +141,7 @@ namespace FakeXiecheng.API.Controllers
                 touristRouteToReturn);
         }
 
-        [HttpPut("{touristRouteId:Guid}")]
+        [HttpPut("{touristRouteId:Guid}", Name = "UpdateTouristRoute")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdateTouristRouteAsync(
             [FromRoute] Guid touristRouteId,
@@ -154,7 +158,7 @@ namespace FakeXiecheng.API.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{touristRouteId}")]
+        [HttpPatch("{touristRouteId}", Name = "PartiallyUpdateTouristRoute")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> PartiallyUpdateTouristRouteAsync(
             [FromRoute] Guid touristRouteId,
@@ -176,7 +180,7 @@ namespace FakeXiecheng.API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{touristRouteId}")]
+        [HttpDelete("{touristRouteId}", Name = "DeleteTouristRoute")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> DeleteTouristRouteAsync(
             [FromRoute] Guid touristRouteId)
@@ -206,6 +210,41 @@ namespace FakeXiecheng.API.Controllers
             await _touristRouteRepository.SaveAsync();
 
             return NoContent();
+        }
+
+        private IEnumerable<LinkDto> CreateLinkForTouristRoute(
+            Guid touristRouteId,
+            string fields)
+        {
+            var links = new List<LinkDto>
+            {
+                new LinkDto(
+                    Url.Link("GetTouristRouteById", new { touristRouteId, fields }),
+                    "self",
+                    "GET"),
+                new LinkDto(
+                    Url.Link("UpdateTouristRoute", new { touristRouteId }),
+                    "update",
+                    "PUT"),
+                new LinkDto(
+                    Url.Link("PartiallyUpdateTouristRoute", new { touristRouteId }),
+                    "partially_update",
+                    "PATCH"),
+                new LinkDto(
+                    Url.Link("DeleteTouristRoute", new { touristRouteId }),
+                    "delete",
+                    "DELETE"),
+                new LinkDto(
+                    Url.Link("GetPictureListForTouristRoute", new { touristRouteId }),
+                    "get_pictures",
+                    "GET"),
+                new LinkDto(
+                    Url.Link("CreateTouristRoutePicture", new { touristRouteId }),
+                    "create_picture",
+                    "POST")
+            };
+
+            return links;
         }
 
         private string GenerateTouristRouteResourceUrl(
@@ -240,7 +279,6 @@ namespace FakeXiecheng.API.Controllers
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
-
     }
 
     internal enum ResourceUriType
