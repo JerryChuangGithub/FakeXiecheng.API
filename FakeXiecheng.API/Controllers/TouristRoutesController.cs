@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -45,6 +46,11 @@ namespace FakeXiecheng.API.Controllers
 
         // api/TouristRoutes?keyword=argument
         // if action argument not equal query string, can use [FromQuery(Name = "xxx")]
+        [Produces(
+            "application/json",
+            "application/vnd.jerry.hateoas+json",
+            "application/vnd.jerry.tourist_route.simplify+json",
+            "application/vnd.jerry.tourist_route.simplify.hateoas+json")]
         [HttpGet(Name = "GetTouristRoutes")]
         [HttpHead]
         public async Task<IActionResult> GetTouristRoutesAsync(
@@ -79,8 +85,6 @@ namespace FakeXiecheng.API.Controllers
                 return NotFound("沒有旅遊路線");
             }
 
-            var touristRoutesDto = _mapper.Map<IEnumerable<TouristRouteDto>>(touristRoutesFromRepo);
-
             var previousPageLink = touristRoutesFromRepo.HasPrevious
                 ? GenerateTouristRouteResourceUrl(parameters, paginationParameters, ResourceUriType.PreviousPage)
                 : null;
@@ -101,9 +105,29 @@ namespace FakeXiecheng.API.Controllers
 
             Response.Headers.Add("x-pagination", JsonConvert.SerializeObject(paginationMetadata));
 
-            var shapeDataDtoList = touristRoutesDto.ShapeData(parameters.Fields);
+            var isHateoas = parsedMediaType.SubTypeWithoutSuffix.EndsWith("hateoas", StringComparison.InvariantCultureIgnoreCase);
 
-            if (parsedMediaType.ToString() == "application/vnd.jerry.hateoas+json")
+            var primaryMediaType = isHateoas
+                ? parsedMediaType.SubTypeWithoutSuffix.Substring(0, parsedMediaType.SubTypeWithoutSuffix.Length - 8)
+                : parsedMediaType.SubTypeWithoutSuffix;
+            
+            // var touristRoutesDto = _mapper.Map<IEnumerable<TouristRouteDto>>(touristRoutesFromRepo);
+            // var shapeDataDtoList = touristRoutesDto.ShapeData(parameters.Fields);
+            IEnumerable<object> touristRoutesDto;
+            IEnumerable<ExpandoObject> shapeDataDtoList;
+
+            if (primaryMediaType == "vnd.jerry.tourist_route.simplify")
+            {
+                touristRoutesDto = _mapper.Map<IEnumerable<TouristRouteSimplifyDto>>(touristRoutesFromRepo);
+                shapeDataDtoList = ((IEnumerable<TouristRouteSimplifyDto>)touristRoutesDto).ShapeData(parameters.Fields);
+            }
+            else
+            {
+                touristRoutesDto = _mapper.Map<IEnumerable<TouristRouteDto>>(touristRoutesFromRepo);
+                shapeDataDtoList = ((IEnumerable<TouristRouteDto>)touristRoutesDto).ShapeData(parameters.Fields);
+            }
+            
+            if (isHateoas)
             {
                 return Ok(new
                 {
