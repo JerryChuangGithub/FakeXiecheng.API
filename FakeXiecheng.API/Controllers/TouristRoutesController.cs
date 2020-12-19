@@ -276,7 +276,7 @@ namespace FakeXiecheng.API.Controllers
                     "GET"),
                 new LinkDto(
                     Url.Link("CreateTouristRoute", null),
-                    "create",
+                    "create_tourist_route",
                     "POST")
             };
 
