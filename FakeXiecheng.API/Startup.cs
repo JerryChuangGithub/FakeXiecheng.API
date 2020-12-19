@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using AutoMapper;
 using FakeXiecheng.API.Database;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -96,6 +98,13 @@ namespace FakeXiecheng.API
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
             services.AddTransient<IPropertyMappingService, PropertyMappingService>();
+
+            services.Configure<MvcOptions>(config =>
+            {
+                var outputFormatter = config.OutputFormatters.OfType<NewtonsoftJsonOutputFormatter>()?.FirstOrDefault();
+
+                outputFormatter?.SupportedMediaTypes.Add("application/vnd.jerry.hateoas+json");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
