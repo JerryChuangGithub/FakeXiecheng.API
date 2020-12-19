@@ -251,9 +251,29 @@ namespace FakeXiecheng.API.Controllers
             return links;
         }
 
+        private IEnumerable<LinkDto> CreateLinkForTouristRouteList(
+            TouristRouteResourceParameters parameters,
+            PaginationResourceParameters paginationParameters)
+        {
+            var links = new List<LinkDto>
+            {
+                new LinkDto(
+                    GenerateTouristRouteResourceUrl(
+                        parameters, paginationParameters, ResourceUriType.CurrentPage),
+                    "self",
+                    "GET"),
+                new LinkDto(
+                    Url.Link("CreateTouristRoute", null),
+                    "create",
+                    "POST")
+            };
+
+            return links;
+        }
+
         private string GenerateTouristRouteResourceUrl(
-            [FromQuery] TouristRouteResourceParameters parameters,
-            [FromQuery] PaginationResourceParameters paginationParameters,
+            TouristRouteResourceParameters parameters,
+            PaginationResourceParameters paginationParameters,
             ResourceUriType type)
         {
             return type switch
@@ -280,6 +300,17 @@ namespace FakeXiecheng.API.Controllers
                         orderBy = parameters.OrderBy,
                         fields = parameters.Fields
                     }),
+                ResourceUriType.CurrentPage => _urlHelper.Link(
+                    "GetTouristRoutes",
+                    new
+                    {
+                        keyword = parameters.Keyword,
+                        rating = parameters.Rating,
+                        pageNumber = paginationParameters.PageNumber,
+                        pageSize = paginationParameters.PageSize,
+                        orderBy = parameters.OrderBy,
+                        fields = parameters.Fields
+                    }),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
@@ -288,6 +319,7 @@ namespace FakeXiecheng.API.Controllers
     internal enum ResourceUriType
     {
         PreviousPage,
-        NextPage
+        NextPage,
+        CurrentPage
     }
 }
